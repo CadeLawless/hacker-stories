@@ -2,7 +2,9 @@
 
 :root {
     --text: #eae9fc;
+    --text-lighter: #9494a1;
     --background: #0c0c1d;
+    --background-lighter: #232337;
     --primary: #62c2df;
     --secondary: #020024;
     --accent: #0600c2;
@@ -59,4 +61,13 @@ ul span {
 ul span a {
     font-size: 1.5rem;
 }
-
+input, select, textarea {
+    background-color: var(--background-lighter);
+    color: var(--text);
+    border-radius: 4px;
+    border: 1px solid var(--text-lighter);
+    padding: 0.3rem;
+}
+:is(input, select, textarea):focus {
+    outline: 0.5px solid var(--text);
+}
