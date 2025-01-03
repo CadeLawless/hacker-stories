@@ -1,0 +1,62 @@
+@import url('https://fonts.googleapis.com/css?family=Inter:700|Roboto%20Flex:400');
+
+:root {
+    --text: #eae9fc;
+    --background: #0c0c1d;
+    --primary: #62c2df;
+    --secondary: #020024;
+    --accent: #0600c2;
+}
+body {
+    background-color: var(--background);
+    color: var(--text);
+}
+a {
+    color: var(--primary);
+    transition: 0.4s;
+}
+a:hover {
+    color: #4a96ad;
+}
+
+body {
+  font-family: 'Roboto Flex';
+  font-weight: 400;
+}
+
+h1, h2, h3, h4, h5 {
+  font-family: 'Inter';
+  font-weight: 700;
+}
+
+html {font-size: 100%;} /* 16px */
+
+h1 {font-size: 4.210rem; /* 67.36px */}
+
+h2 {font-size: 3.158rem; /* 50.56px */}
+
+h3 {font-size: 2.369rem; /* 37.92px */}
+
+h4 {font-size: 1.777rem; /* 28.48px */}
+
+h5 {font-size: 1.333rem; /* 21.28px */}
+
+small {font-size: 0.750rem; /* 12px */}
+
+ul {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+ul span {
+    display: inline-block;
+}
+ul span {
+    display: block;
+    margin-bottom: 0.8rem;
+}
+ul span a {
+    font-size: 1.5rem;
+}
+
