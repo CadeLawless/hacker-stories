@@ -21,8 +21,10 @@ const App = () => {
     }
   ];
 
+  const [searchTerm, setSearchTerm] = React.useState('');
+
   const handleSearch = (event) => {
-    console.log(event.target.value);
+    setSearchTerm(event.target.value.toString().toLowerCase());
   };
 
   return (
@@ -33,7 +35,7 @@ const App = () => {
 
       <hr />
 
-      <List list={stories} />
+      <List list={stories} search={searchTerm} />
     </div>
   );
 }
@@ -57,9 +59,16 @@ const Search = (props) => {
 }
 
 const List = (props) => {
+  let list = props.list;
+  list = list.filter((i) => {
+    let title = i.title.toString().toLowerCase();
+    let author = i.author.toString().toLowerCase();
+    return (title.includes(props.search) || author.includes(props.search));
+  });
+
   return (
     <ul>
-        {props.list.map((item) => (
+        {list.map((item) => (
             <Item key={item.objectID} item={item} />
           ))}
       </ul>
