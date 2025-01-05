@@ -33,9 +33,22 @@ const App = () => {
     }
   ];
 
+  const getAsnycStories = () => 
+    new Promise((resolve) =>
+      setTimeout(() => {
+        resolve({ data: { stories: initalStories } })
+      }, 2000)
+    );
+
   const [searchTerm, setSearchTerm] = useStorageState('search', 'React');
 
-  const [stories, setStories] = React.useState(initalStories);
+  const [stories, setStories] = React.useState([]);
+
+  React.useEffect(() => {
+    getAsnycStories().then(result => {
+      setStories(result.data.stories);
+    });
+  }, []);
 
   const handleSearch = (event) => {
     setSearchTerm(event.target.value);
