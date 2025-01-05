@@ -14,7 +14,7 @@ const useStorageState = (key, initialState) => {
 };
 
 const App = () => {
-  const stories = [
+  const initalStories = [
     {
       title: 'React',
       url: 'https://reactjs.org/',
@@ -35,8 +35,17 @@ const App = () => {
 
   const [searchTerm, setSearchTerm] = useStorageState('search', 'React');
 
+  const [stories, setStories] = React.useState(initalStories);
+
   const handleSearch = (event) => {
     setSearchTerm(event.target.value);
+  };
+
+  const handleRemoveStory = (item) => {
+    const newStories = stories.filter(
+      (story) => item.objectID !== story.objectID
+    );
+    setStories(newStories);
   };
 
   const searchedStories = stories.filter((story) =>
@@ -59,7 +68,7 @@ const App = () => {
 
       <hr />
 
-      <List list={searchedStories} />
+      <List onRemoveItem={handleRemoveStory} list={searchedStories} />
     </div>
   );
 }
@@ -95,25 +104,32 @@ const InputWithLabel = ({
   );
 };
 
-const List = ({ list }) => (
+const List = ({ list, onRemoveItem }) => (
   <ul>
-      {list.map((item) => (
-          <Item key={item.objectID} item={item} />
-        ))}
-    </ul>
+    {list.map((item) => (
+        <Item onRemoveItem={onRemoveItem} key={item.objectID} item={item} />
+      ))}
+  </ul>
 );
 
-const Item = ({ item }) => (
-  <ul>
-      <li key={item.objectID}>
-        <span>
-          <a target='_blank' href={item.url}>{item.title}</a>
-        </span>
-        <span>{item.author}</span>
-        <span>{item.num_comments}</span>
-        <span>{item.points}</span>
-      </li>
-  </ul>
+const Item = ({ item, onRemoveItem }) => (
+  <li key={item.objectID}>
+    <span>
+      <a target='_blank' href={item.url}>{item.title}</a>
+    </span>
+    <span>{item.author}</span>
+    <span>{item.num_comments}</span>
+    <span>{item.points}</span>
+    <Button
+      item={item} onRemoveItem={onRemoveItem}
+    >
+      Remove Item
+    </Button>
+  </li>
+);
+
+const Button = ({ item, onRemoveItem, children }) => (
+  <button type='button' onClick={() => onRemoveItem(item)}>{children}</button>
 );
 
 export default App;
