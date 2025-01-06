@@ -36,18 +36,23 @@ const App = () => {
   const getAsnycStories = () => 
     new Promise((resolve) =>
       setTimeout(() => {
-        resolve({ data: { stories: initalStories } })
+        resolve({ data: { stories: initalStories } });
       }, 2000)
     );
 
   const [searchTerm, setSearchTerm] = useStorageState('search', 'React');
 
   const [stories, setStories] = React.useState([]);
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [isError, setIsError] = React.useState(false);
 
   React.useEffect(() => {
+    setIsLoading(true);
     getAsnycStories().then(result => {
       setStories(result.data.stories);
-    });
+      setIsLoading(false);
+    })
+    .catch(() => setIsError(true));
   }, []);
 
   const handleSearch = (event) => {
@@ -81,7 +86,13 @@ const App = () => {
 
       <hr />
 
-      <List onRemoveItem={handleRemoveStory} list={searchedStories} />
+      {isError && <p>Something went wrong...</p>}
+
+      {isLoading ? (
+        <p>Loading...</p>
+      ) : (
+        <List onRemoveItem={handleRemoveStory} list={searchedStories} />
+      )}
     </div>
   );
 }
@@ -118,11 +129,13 @@ const InputWithLabel = ({
 };
 
 const List = ({ list, onRemoveItem }) => (
-  <ul>
-    {list.map((item) => (
-        <Item onRemoveItem={onRemoveItem} key={item.objectID} item={item} />
-      ))}
-  </ul>
+  <div>
+    <ul>
+      {list.map((item) => (
+          <Item onRemoveItem={onRemoveItem} key={item.objectID} item={item} />
+        ))}
+    </ul>
+  </div>
 );
 
 const Item = ({ item, onRemoveItem }) => (
