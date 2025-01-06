@@ -13,33 +13,9 @@ const useStorageState = (key, initialState) => {
   return [value, setValue];
 };
 
+const API_ENDPOINT = 'https://hn.algolia.com/api/v1/search?query=';
+
 const App = () => {
-  const initalStories = [
-    {
-      title: 'React',
-      url: 'https://reactjs.org/',
-      author: 'Jordan Walke',
-      num_comments: 3,
-      points: 4,
-      objectID: 0,
-    },
-    {
-      title: 'Redux',
-      url: 'https://redux.js.org/',
-      author: 'Dan Abramov, Andrew Clark',
-      num_comments: 2,
-      points: 5,
-      objectID: 1,
-    }
-  ];
-
-  const getAsnycStories = () => 
-    new Promise((resolve) =>
-      setTimeout(() => {
-        resolve({ data: { stories: initalStories } });
-      }, 2000)
-    );
-
   const storiesReducer = (state, action) => {
     switch (action.type) {
       case 'STORIES_FETCH_INIT':
@@ -81,17 +57,21 @@ const App = () => {
   );
 
   React.useEffect(() => {
+    if (!searchTerm) return;
+
     dispatchStories({ type: 'STORIES_FETCH_INIT' });
 
-    getAsnycStories().then(result => {
-      dispatchStories({
-        type: 'STORIES_FETCH_SUCCESS',
-        payload: result.data.stories,
-      });
-    })
-    .catch(() => 
-      dispatchStories({ type: 'STORIES_FETCH_FAILURE' }));
-  }, []);
+    fetch(`${API_ENDPOINT}${searchTerm}`)
+      .then((response) => response.json())
+      .then((result) => {
+        dispatchStories({
+          type: 'STORIES_FETCH_SUCCESS',
+          payload: result.hits,
+        });
+      })
+      .catch(() => 
+        dispatchStories({ type: 'STORIES_FETCH_FAILURE' }));
+  }, [searchTerm]);
 
   const handleSearch = (event) => {
     setSearchTerm(event.target.value);
@@ -103,10 +83,6 @@ const App = () => {
       payload: item,
     });
   };
-
-  const searchedStories = stories.data.filter((story) =>
-    story.title.toLowerCase().includes(searchTerm.toLowerCase())
-  );
 
   return (
     <div>
@@ -129,7 +105,7 @@ const App = () => {
       {stories.isLoading ? (
         <p>Loading...</p>
       ) : (
-        <List onRemoveItem={handleRemoveStory} list={searchedStories} />
+        <List onRemoveItem={handleRemoveStory} list={stories.data} />
       )}
     </div>
   );
