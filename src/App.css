@@ -71,3 +71,30 @@ input, select, textarea {
 :is(input, select, textarea):focus {
     outline: 0.5px solid var(--text);
 }
+.flex {
+    display: flex;
+}
+.inline-flex {
+    display: inline-flex;
+}
+:is(.flex, .inline-flex).row {
+    flex-direction: row;
+}
+:is(.flex, .inline-flex).column {
+    flex-direction: column;
+}
+:is(.flex, .inline-flex).wrap {
+    flex-wrap: wrap;
+}
+:is(.flex, .inline-flex).align-center {
+    align-items: center;
+}
+:is(.flex, .inline-flex).justify-center {
+    justify-content: center;
+}
+.search-container {
+    gap: 0.8rem;
+}
+.input-with-label {
+    gap: 0.4rem;    
+}

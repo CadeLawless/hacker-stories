@@ -51,6 +51,10 @@ const App = () => {
 
   const [searchTerm, setSearchTerm] = useStorageState('search', 'React');
 
+  const [url, setUrl] = React.useState(
+    `${API_ENDPOINT}${searchTerm}`
+  );
+
   const [stories, dispatchStories] = React.useReducer(
     storiesReducer,
     { data: [], isLoading: false, isError: false }
@@ -61,7 +65,7 @@ const App = () => {
 
     dispatchStories({ type: 'STORIES_FETCH_INIT' });
 
-    fetch(`${API_ENDPOINT}${searchTerm}`)
+    fetch(url)
       .then((response) => response.json())
       .then((result) => {
         dispatchStories({
@@ -72,14 +76,17 @@ const App = () => {
       .catch(() => 
         dispatchStories({ type: 'STORIES_FETCH_FAILURE' })
       );
-  }, [searchTerm]);
+  }, [url]);
 
   React.useEffect(() => {
     handleFetchStories();
   }, [handleFetchStories]);
 
-  const handleSearch = (event) => {
+  const handleSearchInput = (event) => {
     setSearchTerm(event.target.value);
+  };
+  const handleSearchSubmit = (event) => {
+    setUrl(`${API_ENDPOINT}${searchTerm}`);
   };
 
   const handleRemoveStory = (item) => {
@@ -93,15 +100,22 @@ const App = () => {
     <div>
       <h1>My Hacker Stories</h1>
 
-      <InputWithLabel
-        id='search'
-        label='Search'
-        isFocused
-        value={searchTerm}
-        onInputChange={handleSearch}
-      >
-        <strong>Search: </strong>
-      </InputWithLabel>
+      <div className='search-container inline-flex row wrap align-center'>
+        <InputWithLabel
+          id='search'
+          type='search'
+          label='Search'
+          isFocused
+          value={searchTerm}
+          onInputChange={handleSearchInput}
+        >
+          <strong>Search: </strong>
+        </InputWithLabel>
+
+        <Button onClickFn={handleSearchSubmit} disabled={!searchTerm}>
+          Search
+        </Button>
+      </div>
 
       <hr />
 
@@ -133,9 +147,8 @@ const InputWithLabel = ({
   }, [isFocused]);
 
   return (
-    <>
+    <div className='input-with-label inline-flex row align-center'>
       <label htmlFor={id}>{children}</label>
-      &nbsp;
       <input
         ref={inputRef}
         id={id}
@@ -143,7 +156,7 @@ const InputWithLabel = ({
         value={value}
         onChange={onInputChange}
       />
-    </>
+    </div>
   );
 };
 
@@ -166,15 +179,19 @@ const Item = ({ item, onRemoveItem }) => (
     <span>{item.num_comments}</span>
     <span>{item.points}</span>
     <Button
-      item={item} onRemoveItem={onRemoveItem}
+      onClickFn={() => onRemoveItem(item)}
     >
       Remove Item
     </Button>
   </li>
 );
 
-const Button = ({ item, onRemoveItem, children }) => (
-  <button type='button' onClick={() => onRemoveItem(item)}>{children}</button>
+const Button = ({
+  onClickFn = null,
+  disabled = false,
+  children,
+}) => (
+  <button type='button' disabled={disabled} onClick={onClickFn !== null ? onClickFn : undefined}>{children}</button>
 );
 
 export default App;
