@@ -85,6 +85,8 @@ const App = () => {
   };
   const handleSearchSubmit = (event) => {
     setUrl(`${API_ENDPOINT}${searchTerm}`);
+
+    event.preventDefault();
   };
 
   const handleRemoveStory = (item) => {
@@ -98,22 +100,11 @@ const App = () => {
     <div>
       <h1>My Hacker Stories</h1>
 
-      <div className='search-container inline-flex row wrap align-center'>
-        <InputWithLabel
-          id='search'
-          type='search'
-          label='Search'
-          isFocused
-          value={searchTerm}
-          onInputChange={handleSearchInput}
-        >
-          <strong>Search: </strong>
-        </InputWithLabel>
-
-        <Button onClickFn={handleSearchSubmit} disabled={!searchTerm}>
-          Search
-        </Button>
-      </div>
+      <SearchForm
+        searchTerm={searchTerm}
+        onSearchInput={handleSearchInput}
+        onSearchSubmit={handleSearchSubmit}
+      />
 
       <hr />
 
@@ -127,6 +118,31 @@ const App = () => {
     </div>
   );
 }
+
+const SearchForm = ({
+  searchTerm,
+  onSearchInput,
+  onSearchSubmit,
+}) => (
+  <form onSubmit={onSearchSubmit}>
+    <div className='search-container inline-flex row wrap align-center'>
+      <InputWithLabel
+        id='search'
+        type='search'
+        label='Search'
+        isFocused
+        value={searchTerm}
+        onInputChange={onSearchInput}
+      >
+        <strong>Search: </strong>
+      </InputWithLabel>
+
+      <Button type='submit' disabled={!searchTerm}>
+        Search
+      </Button>
+    </div>
+  </form>
+);
 
 const InputWithLabel = ({
   id,
@@ -186,10 +202,11 @@ const Item = ({ item, onRemoveItem }) => (
 
 const Button = ({
   onClickFn = null,
+  type = 'button',
   disabled = false,
   children,
 }) => (
-  <button type='button' disabled={disabled} onClick={onClickFn !== null ? onClickFn : undefined}>{children}</button>
+  <button type={type} disabled={disabled} onClick={onClickFn !== null ? onClickFn : undefined}>{children}</button>
 );
 
 export default App;
