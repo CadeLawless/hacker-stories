@@ -1,20 +1,36 @@
 import * as React from 'react';
 import axios from 'axios';
 import './App.css';
+import Check from './check.svg?react';
 
 const useStorageState = (key, initialState) => {
+  const isMounted = React.useRef(false);
+
   const [value, setValue] = React.useState(
     localStorage.getItem(key) || initialState
   );
 
   React.useEffect(() => {
-    localStorage.setItem(key, value);
+    if(!isMounted.current){
+      isMounted.current = true;
+    }else{
+      console.log('A');
+      localStorage.setItem(key, value);
+    }
   }, [value]);
 
   return [value, setValue];
 };
 
 const API_ENDPOINT = 'https://hn.algolia.com/api/v1/search?query=';
+
+const getSumComments = (stories) => {
+  console.log('C');
+  return stories.data.reduce(
+    (result, value) => result + value.num_comments,
+    0
+  );
+};
 
 const App = () => {
   const storiesReducer = (state, action) => {
@@ -77,6 +93,7 @@ const App = () => {
   }, [url]);
 
   React.useEffect(() => {
+    console.log('How many times do I log?');
     handleFetchStories();
   }, [handleFetchStories]);
 
@@ -89,24 +106,29 @@ const App = () => {
     event.preventDefault();
   };
 
-  const handleRemoveStory = (item) => {
+  const handleRemoveStory = React.useCallback((item) => {
     dispatchStories({
       type: 'REMOVE_STORY',
       payload: item,
     });
-  };
+  }, []);
+
+  console.log('B:App');
+
+  const sumComments = React.useMemo(
+    () => getSumComments(stories),
+    [stories]
+  );
 
   return (
-    <div>
-      <h1>My Hacker Stories</h1>
+    <div className='container'>
+      <h1 className='headline-primary'>My Hacker Stories with {sumComments} comments.</h1>
 
       <SearchForm
         searchTerm={searchTerm}
         onSearchInput={handleSearchInput}
         onSearchSubmit={handleSearchSubmit}
       />
-
-      <hr />
 
       {stories.isError && <p>Something went wrong...</p>}
 
@@ -124,23 +146,21 @@ const SearchForm = ({
   onSearchInput,
   onSearchSubmit,
 }) => (
-  <form onSubmit={onSearchSubmit}>
-    <div className='search-container inline-flex row wrap align-center'>
-      <InputWithLabel
-        id='search'
-        type='search'
-        label='Search'
-        isFocused
-        value={searchTerm}
-        onInputChange={onSearchInput}
-      >
-        <strong>Search: </strong>
-      </InputWithLabel>
+  <form onSubmit={onSearchSubmit} className='search-form'>
+    <InputWithLabel
+      id='search'
+      type='search'
+      label='Search'
+      isFocused
+      value={searchTerm}
+      onInputChange={onSearchInput}
+    >
+      <strong>Search: </strong>
+    </InputWithLabel>
 
-      <Button type='submit' disabled={!searchTerm}>
-        Search
-      </Button>
-    </div>
+    <Button className='button button_large' type='submit' disabled={!searchTerm}>
+      Search
+    </Button>
   </form>
 );
 
@@ -161,42 +181,48 @@ const InputWithLabel = ({
   }, [isFocused]);
 
   return (
-    <div className='input-with-label inline-flex row align-center'>
-      <label htmlFor={id}>{children}</label>
+    <>
+      <label className='label' htmlFor={id}>{children}</label>
       <input
+        className='input'
         ref={inputRef}
         id={id}
         type={type}
         value={value}
         onChange={onInputChange}
       />
-    </div>
+    </>
   );
 };
 
-const List = ({ list, onRemoveItem }) => (
-  <div>
-    <ul>
-      {list.map((item) => (
-          <Item onRemoveItem={onRemoveItem} key={item.objectID} item={item} />
-        ))}
-    </ul>
-  </div>
+const List = React.memo(
+  ({ list, onRemoveItem }) => 
+    console.log('B:List') || (
+    <div>
+      <ul>
+        {list.map((item) => (
+            <Item onRemoveItem={onRemoveItem} key={item.objectID} item={item} />
+          ))}
+      </ul>
+    </div>
+  )
 );
-
 const Item = ({ item, onRemoveItem }) => (
-  <li key={item.objectID}>
-    <span>
+  <li className='item' key={item.objectID}>
+    <span style={{ width: '40%' }}>
       <a target='_blank' href={item.url}>{item.title}</a>
     </span>
-    <span>{item.author}</span>
-    <span>{item.num_comments}</span>
-    <span>{item.points}</span>
-    <Button
-      onClickFn={() => onRemoveItem(item)}
-    >
-      Remove Item
-    </Button>
+    <span style={{ width: '30%' }}>{item.author}</span>
+    <span style={{ width: '10%' }}>{item.num_comments}</span>
+    <span style={{ width: '10%' }}>{item.points}</span>
+    <span style={{ width: '10%' }}>
+      <Button
+        onClickFn={() => onRemoveItem(item)}
+        className='button button_small'
+      >
+        <Check height='18px' width='18px' />
+      </Button>
+    </span>
   </li>
 );
 
@@ -204,9 +230,10 @@ const Button = ({
   onClickFn = null,
   type = 'button',
   disabled = false,
+  className='',
   children,
 }) => (
-  <button type={type} disabled={disabled} onClick={onClickFn !== null ? onClickFn : undefined}>{children}</button>
+  <button className={className} type={type} disabled={disabled} onClick={onClickFn !== null ? onClickFn : undefined}>{children}</button>
 );
 
 export default App;

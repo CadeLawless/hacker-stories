@@ -9,10 +9,82 @@
     --secondary: #020024;
     --accent: #0600c2;
 }
+.container {
+    height: 100vw;
+    padding: 20px;
+
+    background: #83a4d4;
+    background: linear-gradient(to left, #b6fbff, #83a4d4);
+
+    color: #171212;
+}
+.headline-primary {
+    font-size: 48px;
+    font-weight: 300;
+    letter-spacing: 2px;
+}
 body {
     background-color: var(--background);
     color: var(--text);
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -mox-osx-font-smoothing: grayscale;
 }
+.item {
+    display: flex;
+    align-items: center;
+    padding-bottom: 5px;
+}
+.item > span {
+    padding: 0 5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.item > span > a {
+    color: inherit;
+}
+.button {
+    background: transparent;
+    border: 1px solid #171212;
+    padding: 5px;
+    cursor: pointer;
+    transition: all 0.1s ease-in;
+}
+.button:hover {
+    background-color: #171212;
+    color: #ffffff;
+}
+.button_small {
+    padding: 5px;
+}
+.button_large {
+    padding: 10px;
+}
+.search-form {
+    padding: 10px 0 20px 0;
+    display: flex;
+    gap: 10px;
+    align-items: baseline;
+}
+.label {
+    border-top: 1px solid #171212;
+    border-left: 1px solid #171212;
+    padding-left: 5px;
+    font-size: 24px;
+}
+.input {
+    border: none;
+    border-bottom: 1px solid #171212;
+    background-color: transparent;
+    font-size: 24px;
+}
+.button:hover > svg g {
+    fill: #ffffff;
+    stroke: #ffffff;
+}
+/*
 a {
     color: var(--primary);
     transition: 0.4s;
@@ -31,19 +103,19 @@ h1, h2, h3, h4, h5 {
   font-weight: 700;
 }
 
-html {font-size: 100%;} /* 16px */
+html {font-size: 100%;}
 
-h1 {font-size: 4.210rem; /* 67.36px */}
+h1 {font-size: 4.210rem;}
 
-h2 {font-size: 3.158rem; /* 50.56px */}
+h2 {font-size: 3.158rem;}
 
-h3 {font-size: 2.369rem; /* 37.92px */}
+h3 {font-size: 2.369rem;}
 
-h4 {font-size: 1.777rem; /* 28.48px */}
+h4 {font-size: 1.777rem;}
 
-h5 {font-size: 1.333rem; /* 21.28px */}
+h5 {font-size: 1.333rem;}
 
-small {font-size: 0.750rem; /* 12px */}
+small {font-size: 0.750rem;}
 
 ul {
     display: flex;
@@ -97,4 +169,4 @@ input, select, textarea {
 }
 .input-with-label {
     gap: 0.4rem;    
-}
+} */
