@@ -14,6 +14,10 @@ type Story = {
 
 type Stories = Story[];
 
+type StoriesResponse = {
+  data: Story[];
+};
+
 type ItemProps = {
   item: Story;
   onRemoveItem: (item: Story) => void;
@@ -36,6 +40,7 @@ type StoriesFetchInitAction = {
 
 type StoriesFetchSuccessAction = {
   type: 'STORIES_FETCH_SUCCESS';
+  payload: Stories;
 };
 
 type StoriesFetchFailureAction = {
@@ -116,22 +121,31 @@ const API_ENDPOINT = 'https://hn.algolia.com/api/v1/search?query=';
 type SearchFormProps = {
   searchTerm: string;
   onSearchInput: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  onSearchSubmit: (event: React.FormEvent<HTMLInputElement>) => void;
+  onSearchSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
 };
 
 type InputWithLabelProps = {
   id: string;
   value: string;
   type?: string;
+  label: string;
   onInputChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   isFocused?: boolean;
   children: React.ReactNode;
 }
 
-const getSumComments = (stories) => {
+type ButtonProps = {
+  onClickFn?: () => void;
+  className?: string;
+  children: React.ReactNode;
+  type?: "button" | "reset" | "submit";
+  disabled?: boolean;
+};
+
+const getSumComments = (stories: StoriesResponse) => {
   console.log('C');
   return stories.data.reduce(
-    (result, value) => result + value.num_comments,
+    (result: number, value: Story) => result + value.num_comments,
     0
   );
 };
@@ -248,7 +262,7 @@ const InputWithLabel: React.FC<InputWithLabelProps> = ({
   isFocused,
   children,
 }) => {
-  const inputRef = React.useRef<HTMLInputElement>();
+  const inputRef = React.useRef<HTMLInputElement | null>(null);
 
   React.useEffect(() => {
     if (isFocused && inputRef.current) {
@@ -300,7 +314,7 @@ const Item: React.FC<ItemProps> = ({ item, onRemoveItem }) => (
   </li>
 );
 
-const Button = ({
+const Button: React.FC<ButtonProps> = ({
   onClickFn = null,
   type = 'button',
   disabled = false,
