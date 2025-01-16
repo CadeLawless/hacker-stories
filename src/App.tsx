@@ -325,3 +325,5 @@ const Button: React.FC<ButtonProps> = ({
 );
 
 export default App;
+
+export { storiesReducer, SearchForm, InputWithLabel, List, Item, Button };
