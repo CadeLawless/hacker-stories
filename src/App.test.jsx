@@ -8,12 +8,15 @@ import {
 
 import {
     storiesReducer,
+    App,
     Item,
     List,
     SearchForm,
     InputWithLabel,
     Button
 } from './App';
+
+import axios from 'axios';
 
 const storyOne = {
     title: 'React',
@@ -34,6 +37,8 @@ const storyTwo = {
 };
 
 const stories = [storyOne, storyTwo];
+
+vi.mock('axios');
 
 describe('storiesReducer', () => {
     it('removes a story from all stories', () => {
@@ -109,5 +114,103 @@ describe('Item', () => {
 
             expect(searchFormProps.onSearchSubmit).toHaveBeenCalledTimes(1);
         });
+    });
+});
+
+describe('App', () => {
+    it('succeeds fetching data', async () => {
+        const promise = Promise.resolve({
+            data: {
+                hits: stories,
+            }
+        });
+        
+        axios.get.mockImplementationOnce(() => promise);
+        
+        render(<App />);
+
+        expect(screen.queryByText(/Loading/)).toBeInTheDocument();
+        
+        await waitFor(async () => await promise);
+
+        expect(screen.queryByText(/Loading/)).toBeNull();
+
+        expect(screen.getByText('React')).toBeInTheDocument();
+        expect(screen.getByText('Redux')).toBeInTheDocument();
+        expect(screen.getAllByText('Dismiss').length).toBe(2);
+    });
+
+    it('fails fetching data', async () => {
+        const promise = Promise.reject();
+
+        axios.get.mockImplementationOnce(() => promise);
+
+        render(<App />);
+
+        expect(screen.getByText(/Loading/)).toBeInTheDocument();
+
+        try {
+            await waitFor(async () => await promise);
+        } catch (error) {
+            expect(screen.queryByText(/Loading/)).toBeNull();
+            expect(screen.queryByText(/went wrong/)).toBeInTheDocument();
+        }
+    });
+
+    it('removes a story', async () => {
+        const promise = Promise.resolve({
+            data: {
+                hits: stories,
+            },
+        });
+
+        axios.get.mockImplementationOnce(() => promise);
+
+        render(<App />);
+
+        await waitFor(async () => await promise);
+
+        expect(screen.getAllByText('Dismiss').length).toBe(2);
+        expect(screen.getByText('Jordan Walke')).toBeInTheDocument();
+
+        fireEvent.click(screen.getAllByText('Dismiss')[0]);
+
+        expect(screen.getAllByText('Dismiss').length).toBe(1);
+        expect(screen.queryByText('Jordan Walke')).toBeNull();
+    });
+
+    it('searches for specific stories', async () => {
+        const reactPromise = Promise.resolve({
+            data: {
+                hits: stories,
+            },
+        });
+
+        const anotherStory = {
+            title: 'Javascript',
+            url: 'https://en.wikipedia.org/wiki/JavaScript',
+            author: 'Brendan Eich',
+            num_comments: 15,
+            points: 10,
+            objectID: 3,
+        };
+
+        const javascriptPromise = Promise.resolve({
+            data: {
+                hits: [anotherStory],
+            },
+        });
+
+        axios.get.mockImplementationOnce((url) => {
+            if (url.includes('React')) {
+                return reactPromise;
+            }
+
+            if (url.includes('JavaScript')) {
+                return javascriptPromise;
+            }
+
+            throw Error();
+        })
     });
 });

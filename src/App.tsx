@@ -308,11 +308,13 @@ const Item: React.FC<ItemProps> = ({ item, onRemoveItem }) => (
         onClickFn={() => onRemoveItem(item)}
         className='button button_small'
       >
-        <Check height='18px' width='18px' />
+        Dismiss
       </Button>
     </span>
   </li>
 );
+
+// svg code instead of dismiss - <Check height='18px' width='18px' />
 
 const Button: React.FC<ButtonProps> = ({
   onClickFn = null,
@@ -326,4 +328,4 @@ const Button: React.FC<ButtonProps> = ({
 
 export default App;
 
-export { storiesReducer, SearchForm, InputWithLabel, List, Item, Button };
+export { storiesReducer, App, SearchForm, InputWithLabel, List, Item, Button };
